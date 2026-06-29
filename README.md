@@ -2,4 +2,4 @@
 Ъыыыъыъыъыъъыъыъы
 
 # Уффф.....
-![tralalero tralala orcalero orcala]([https://github.com/jon/coolproject/raw/master/image/image.png](https://raw.githubusercontent.com/GIKExe/is_drone_or_not/refs/heads/main/TralaleloTralala.jfif))
+![tralalero tralala orcalero orcala](https://github.com/GIKExe/is_drone_or_not/blob/main/TralaleloTralala.png?raw=true)
