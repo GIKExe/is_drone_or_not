@@ -4,5 +4,6 @@
 # Уффф.....
 ![tralalero tralala orcalero orcala](https://github.com/GIKExe/is_drone_or_not/blob/main/TralaleloTralala.png?raw=true)
 
-<video src="https://github.com/GIKExe/is_drone_or_not/blob/main/Freddy_Fazbear.mp4" width="100%" controls></video>
+![](https://github.com/GIKExe/is_drone_or_not/blob/main/Freddy_Fazbear.mp4)
+
 
