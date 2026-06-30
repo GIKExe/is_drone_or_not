@@ -2,6 +2,7 @@
 data
 out
 runs
+micro.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
