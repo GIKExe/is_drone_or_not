@@ -31,14 +31,14 @@ def save_melspectrogram(audio_array, sample_rate, save_path):
     mel_spec_normalized = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min())
     mel_spec_normalized = (mel_spec_normalized * 255).astype(np.uint8)
 
-    plt.imsave(save_path, mel_spec_normalized, cmap='viridis')
+    plt.imsave(save_path, mel_spec_normalized, cmap='gray')
 
 
 # 4. Обработка данных
 for index, item in enumerate(dataset['train']):
     try:
         # Извлекаем сырые байты аудиофайла
-        audio_bytes = item['audio']['bytes']
+        audio_bytes = item['audio']['bytes'] # type: ignore
 
         # Декодируем аудио в массив numpy
         with io.BytesIO(audio_bytes) as byte_io:
@@ -47,7 +47,7 @@ for index, item in enumerate(dataset['train']):
         if len(audio_data.shape) > 1:
             audio_data = np.mean(audio_data, axis=1)
 
-        label_id = item['label']
+        label_id = item['label'] # type: ignore
         class_name = LABEL_MAP.get(label_id, str(label_id))
 
         # Разделение выборки: 20% в val, 80% в train
