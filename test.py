@@ -15,7 +15,7 @@ def create_spectrogram(audio_array, sample_rate):
     mel_spec_normalized = (mel_spec_normalized * 255).astype(np.uint8)
 
     # для отображения в реал тайме
-    # plt.imsave('micro.png', mel_spec_normalized, cmap='gray')
+    plt.imsave('micro.png', mel_spec_normalized, cmap='gray')
 
     # Конвертируем в 3-канальное изображение (RGB), 
     # так как plt.imsave с cmap='gray' сохраняет именно 3 канала (R=G=B)
@@ -53,8 +53,8 @@ def main():
         
         q = float(results.probs.data[0])
         # сохранение записей с высокой вероятностю
-        if q > 0.8:
-            plt.imsave(f'micro/micro_{int(time()*1000)}.png', mel_spec_normalized, cmap='gray')
+        # if q > 0.8:
+            # plt.imsave(f'micro/micro_{int(time()*1000)}.png', mel_spec_normalized, cmap='gray')
         print(f'Вероятность что это дрон: {q*100:.2f}%')
 
 
