@@ -1,10 +1,12 @@
+from collections import deque
+from time import time
+import os
+
 from ultralytics import YOLO
 import sounddevice as sd
 import numpy as np
 import librosa
 import matplotlib.pyplot as plt
-from time import time
-import os
 
 
 def create_spectrogram(audio_array, sample_rate):
@@ -25,6 +27,8 @@ def create_spectrogram(audio_array, sample_rate):
 
 
 def main():
+    list_size = 5
+    median_list = deque(maxlen=list_size)
     debug = input("Включить дебаг? [да/НЕТ] > ").lower() in ['да', 'д', 'y', 'yes']
     index = 1
     paths = {}
@@ -65,7 +69,11 @@ def main():
             if (q > 0.8) and debug:
                 plt.imsave(f'micro/micro_{int(time()*1000)}.png', mel_spec_normalized, cmap='gray')
                 
-            print(f'Вероятность что это дрон: {q*100:.2f}%')
+            median_list.append(q)
+            aq = sum(median_list) / list_size
+            mq = min(median_list)
+            text = 'ДРОН' if (aq > 0.6) and (mq > 0.2) else '    '
+            print(f'{text}  Вероятность: {f"{q*100:.2f}":0>5}%  Среднее: {f"{aq*100:.2f}":0>5}%')
 
 
 if __name__ == '__main__':
