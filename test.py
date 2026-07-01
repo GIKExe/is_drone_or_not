@@ -73,7 +73,7 @@ def main():
             aq = sum(median_list) / list_size
             mq = min(median_list)
             text = 'ДРОН' if (aq > 0.6) and (mq > 0.2) else '    '
-            print(f'{text}  Вероятность: {f"{q*100:.2f}":0>5}%  Среднее: {f"{aq*100:.2f}":0>5}%')
+            print(f'{text}  Вероятность: {f"{q*100:.2f}":>6}%  Среднее: {f"{aq*100:.2f}":>6}%')
 
 
 if __name__ == '__main__':
