@@ -3,6 +3,7 @@ data
 out
 runs
 micro*.png
+audio*.png
 yolo*.pt
 
 # Byte-compiled / optimized / DLL files

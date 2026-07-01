@@ -18,7 +18,8 @@ def create_spectrogram(audio_array, sample_rate):
     mel_spec_normalized = (mel_spec_normalized * 255).astype(np.uint8)
 
     # для отображения в реал тайме
-    plt.imsave('micro.png', mel_spec_normalized, cmap='gray')
+    if mode == 1:
+        plt.imsave('micro.png', mel_spec_normalized, cmap='gray')
 
     # Конвертируем в 3-канальное изображение (RGB)
     img_rgb = np.stack((mel_spec_normalized,) * 3, axis=-1)
@@ -27,9 +28,25 @@ def create_spectrogram(audio_array, sample_rate):
 
 
 def main():
+    global mode
+    mode = 1
+    modes = ['тест модели', 'запись шума', 'полная запись']
+    print('Выберите режим: ')
+    for i, m in enumerate(modes):
+        print(f'{i+1}) {modes[i]}')
+    try:
+        m = int(input(' --> '))
+        if (m < 1) or (m > len(modes)):
+            print('Выбран неверный режим')
+        else:
+            mode = m
+    except:  # noqa: E722
+        print('Ошибка ввода, выбран режим по умолчанию')
+    print(f'Выбранный режим: {modes[mode-1]}')
+    
     list_size = 5
     median_list = deque(maxlen=list_size)
-    debug = input("Включить дебаг? [да/НЕТ] > ").lower() in ['да', 'д', 'y', 'yes']
+   
     index = 1
     paths = {}
     print('Выберите модель: ')
@@ -66,7 +83,7 @@ def main():
             q = float(results.probs.data[0])
             
             # сохранение записей с высокой вероятностью
-            if (q > 0.8) and debug:
+            if ((q > 0.8) and (mode == 2)) or (mode == 3):
                 plt.imsave(f'micro/micro_{int(time()*1000)}.png', mel_spec_normalized, cmap='gray')
                 
             median_list.append(q)
