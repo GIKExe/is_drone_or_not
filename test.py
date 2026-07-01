@@ -1,8 +1,3 @@
-from collections import deque
-from time import time
-import os
-
-from ultralytics import YOLO
 import sounddevice as sd
 import numpy as np
 import librosa
@@ -10,93 +5,39 @@ import matplotlib.pyplot as plt
 
 
 def create_spectrogram(audio_array, sample_rate):
-    mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=128)
-    mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-    
-    # Нормализация
-    mel_spec_normalized = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min())
-    mel_spec_normalized = (mel_spec_normalized * 255).astype(np.uint8)
+	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=128)
 
-    # для отображения в реал тайме
-    if mode == 1:
-        plt.imsave('micro.png', mel_spec_normalized, cmap='gray')
+	# Тихий шум останется тихим, а дрон будет громким.
+	mel_spec_db = librosa.power_to_db(mel_spec, ref=1.0)
+		
+	# ИСПРАВЛЕНИЕ 2: Глобальный диапазон. Всё, что тише -80 дБ, становится черным (0).
+	mel_spec_db = np.clip(mel_spec_db, a_min=-80.0, a_max=0.0)
+		
+	# Переводим в 0-255
+	mel_spec_normalized = ((mel_spec_db + 80.0) / 80.0 * 255).astype(np.uint8)
 
-    # Конвертируем в 3-канальное изображение (RGB)
-    img_rgb = np.stack((mel_spec_normalized,) * 3, axis=-1)
-
-    return img_rgb, mel_spec_normalized
+	# для отображения в реал тайме (сохранение картинки)
+	mel_spec_normalized = np.flipud(mel_spec_normalized)
+	plt.imsave('micro.png', mel_spec_normalized, cmap='gray')
 
 
 def main():
-    global mode
-    mode = 1
-    modes = ['тест модели', 'запись шума', 'полная запись']
-    print('Выберите режим: ')
-    for i, m in enumerate(modes):
-        print(f'{i+1}) {modes[i]}')
-    try:
-        m = int(input(' --> '))
-        if (m < 1) or (m > len(modes)):
-            print('Выбран неверный режим')
-        else:
-            mode = m
-    except:  # noqa: E722
-        print('Ошибка ввода, выбран режим по умолчанию')
-    print(f'Выбранный режим: {modes[mode-1]}')
-    
-    list_size = 5
-    median_list = deque(maxlen=list_size)
-   
-    index = 1
-    paths = {}
-    print('Выберите модель: ')
-    for filename in os.listdir():
-        if filename.startswith('v') and filename.endswith('.pt'):
-            print(f'{index}) {filename}')
-            paths[index] = filename
-            index += 1
-    try:
-        i = int(input(' --> '))
-        print('Выбрана модель:', paths[i])
-    except:  # noqa: E722
-        print('Неверный ввод, выбрана последняя')
-        i = index - 1
+	sample_rate = 16000
+	duration = 5
+	frames_to_read = int(duration * sample_rate)
 
-    model = YOLO(paths[i])
-    
-    sample_rate = 16000
-    duration = 1
-    frames_to_read = int(duration * sample_rate)
+	with sd.InputStream(samplerate=sample_rate, channels=1, dtype='float32') as stream:    
+		while True:
+			audio, overflowed = stream.read(frames_to_read)
+			audio = audio.flatten()
 
-    with sd.InputStream(samplerate=sample_rate, channels=1, dtype='float32') as stream:    
-        while True:
-            # Функция read() блокирует выполнение
-            audio, overflowed = stream.read(frames_to_read)
-            audio = audio.flatten()
-
-            # Спектрограмма
-            img_array, mel_spec_normalized = create_spectrogram(audio, sample_rate)
-            
-            # Передаем numpy-массив напрямую в модель
-            results = model(img_array, save=False, verbose=False)[0]
-            
-            q = float(results.probs.data[0])
-            
-            # сохранение записей с высокой вероятностью
-            if ((q > 0.8) and (mode == 2)) or (mode == 3):
-                plt.imsave(f'micro/micro_{int(time()*1000)}.png', mel_spec_normalized, cmap='gray')
-                
-            median_list.append(q)
-            aq = sum(median_list) / list_size
-            mq = min(median_list)
-            text = 'ДРОН' if (aq > 0.6) and (mq > 0.2) else '    '
-            print(f'{text}  Вероятность: {f"{q*100:.2f}":>6}%  Среднее: {f"{aq*100:.2f}":>6}%')
+			create_spectrogram(audio, sample_rate)
 
 
 if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("\nЗавершено пользователем.")
-    except:
-        raise
+	try:
+		main()
+	except KeyboardInterrupt:
+		pass
+	except:
+		raise
