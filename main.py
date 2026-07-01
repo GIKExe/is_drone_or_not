@@ -15,7 +15,7 @@ LABEL_MAP = {
 # 1. Загрузка датасета
 dataset = load_dataset("parquet", data_files={'train': 'data/*.parquet'})
 
-# ИСПРАВЛЕНО: Правильный способ отключить автодекодирование аудио
+# Правильный способ отключить автодекодирование аудио
 dataset = dataset.cast_column("audio", Audio(decode=False))
 
 # 2. Корневая директория для датасета
