@@ -25,7 +25,7 @@ def create_spectrogram(audio_array, sample_rate):
 
 
 def main():
-    model = YOLO("best.pt")
+    model = YOLO("v2.pt")
     
     while True:
         # Запись и обработка
