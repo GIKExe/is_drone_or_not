@@ -48,7 +48,7 @@ def main():
     model = YOLO(paths[i])
     
     sample_rate = 16000
-    duration = 1
+    duration = 0.5
     frames_to_read = int(duration * sample_rate)
 
     with sd.InputStream(samplerate=sample_rate, channels=1, dtype='float32') as stream:    
