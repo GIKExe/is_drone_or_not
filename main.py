@@ -31,7 +31,19 @@ def save_melspectrogram(audio_array, sample_rate, save_path):
     mel_spec_normalized = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min())
     mel_spec_normalized = (mel_spec_normalized * 255).astype(np.uint8)
 
-    plt.imsave(save_path, mel_spec_normalized, cmap='gray')
+    # Размеры
+    n_mels, total_frames = mel_spec_normalized.shape  # n_mels = 128
+    chunk_width = 16
+
+    # Количество полных кусков (остаток отбрасываем)
+    n_chunks = total_frames // chunk_width
+
+    for i in range(n_chunks):
+        # Вырезаем кусок 128x16
+        start = i * chunk_width
+        end = start + chunk_width
+        chunk = mel_spec_normalized[:, start:end]  # shape: (128, 16)
+        plt.imsave(save_path+f'_chunk_{i:03d}.png', chunk, cmap='gray')
 
 
 # 4. Обработка данных
@@ -58,7 +70,7 @@ for index, item in enumerate(dataset['train']):
         if not os.path.exists(class_dir):
             os.makedirs(class_dir)
 
-        file_name = f"sample_{index:06d}.png"
+        file_name = f"sample_{index:06d}"
         save_path = os.path.join(class_dir, file_name)
 
         save_melspectrogram(audio_data, sample_rate, save_path)
