@@ -12,7 +12,7 @@ def create_spectrogram(audio_array, sample_rate):
 	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=128)
 
 	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
-	min_db = 40
+	min_db = 80
 	mel_spec = np.clip(mel_spec, a_min=-min_db, a_max=0.0)
 	mel_spec = ((mel_spec + min_db) / min_db * 255).astype(np.uint8)
 
@@ -55,7 +55,8 @@ def main():
 			img_array = create_spectrogram(audio, sample_rate)
 			
 			# Передаем numpy-массив напрямую в модель
-			results = model(img_array, save=False, verbose=False)[0]
+			model.predict
+			results = model(img_array, save=False, verbose=False, rect=True)[0]
 			
 			q = float(results.probs.data[0])
 			
