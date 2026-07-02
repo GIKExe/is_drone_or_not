@@ -11,11 +11,9 @@ def to_spectrogram(path):
 	audio_array, sr = librosa.load(path, sr=sr)
 
 	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sr, n_mels=128)
-	mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-
-	# Нормализация
-	mel_spec_normalized = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min())
-	mel_spec_normalized = (mel_spec_normalized * 255).astype(np.uint8)
+	mel_spec_db = librosa.power_to_db(mel_spec, ref=1.0)
+	mel_spec_db = np.clip(mel_spec_db, a_min=-80.0, a_max=0.0)
+	mel_spec_normalized = ((mel_spec_db + 80.0) / 80.0 * 255).astype(np.uint8)
 	
 	# Размеры
 	n_mels, total_frames = mel_spec_normalized.shape  # n_mels = 128
@@ -33,6 +31,7 @@ def to_spectrogram(path):
 
 
 def main():
+	os.makedirs('audio', exist_ok=True)
 	while True:
 		path = input('Путь до файла: ').strip('"')
 
