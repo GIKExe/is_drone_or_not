@@ -25,14 +25,10 @@ base_dataset_dir = "out"
 # 3. Функция генерации спектрограммы
 def save_melspectrogram(audio_array, sample_rate, save_path):
     mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=128)
-    mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
-
-    # Нормализация
-    mel_spec_normalized = (mel_spec_db - mel_spec_db.min()) / (mel_spec_db.max() - mel_spec_db.min())
-    mel_spec_normalized = (mel_spec_normalized * 255).astype(np.uint8)
+    mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
 
     # Размеры
-    n_mels, total_frames = mel_spec_normalized.shape  # n_mels = 128
+    n_mels, total_frames = mel_spec.shape  # n_mels = 128
     chunk_width = 16
 
     # Количество полных кусков (остаток отбрасываем)
@@ -42,7 +38,8 @@ def save_melspectrogram(audio_array, sample_rate, save_path):
         # Вырезаем кусок 128x16
         start = i * chunk_width
         end = start + chunk_width
-        chunk = mel_spec_normalized[:, start:end]  # shape: (128, 16)
+        chunk = mel_spec[:, start:end]  # shape: (128, 16)
+        chunk = np.flipud(chunk)
         plt.imsave(save_path+f'_chunk_{i:03d}.png', chunk, cmap='gray')
 
 
