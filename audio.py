@@ -27,6 +27,7 @@ def to_spectrogram(path):
 		start = i * chunk_width
 		end = start + chunk_width
 		chunk = mel_spec_normalized[:, start:end]  # shape: (128, 16)
+		chunk = np.flipud(chunk)
 		plt.imsave(f'audio/audio_{audio_name}_chunk_{i:03d}.png', chunk, cmap='gray')
 
 
