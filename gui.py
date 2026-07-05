@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import ttk
 import threading
 import queue
 from collections import deque
@@ -123,7 +123,7 @@ class DroneDetectorGUI:
         card2.grid(row=0, column=1, sticky='ew', padx=(5, 0))
         card2.grid_columnconfigure(0, weight=1)
         
-        tk.Label(card2, text="Средняя (5 сек)", bg='#2d2d2d', fg='#888888',
+        tk.Label(card2, text="Средняя (2.5 сек)", bg='#2d2d2d', fg='#888888',
                  font=('Arial', 9)).grid(row=0, column=0, sticky='w')
         self.avg_prob_label = tk.Label(card2, text="0.00%", bg='#2d2d2d', fg='#00aaff',
                                        font=('Arial', 24, 'bold'))
@@ -227,8 +227,8 @@ class DroneDetectorGUI:
                     
                     q = float(results.probs.data[0])
                     
-                    if q > 0.1:
-                        shutil.copy('micro.png', f'micro/micro_{int(time()*1000)}.png')
+                    # if q > 0.1:
+                    #     shutil.copy('micro.png', f'micro/micro_{int(time()*1000)}.png')
                     
                     median_list.append(q)
                     aq = sum(median_list) / list_size
