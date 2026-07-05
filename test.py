@@ -12,6 +12,8 @@ def create_spectrogram(audio_array, sample_rate):
 	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=128)
 
 	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
+	plt.imsave('micro0.png', np.flipud(mel_spec), cmap='gray')
+
 	min_db = 80
 	mel_spec = np.clip(mel_spec, a_min=-min_db, a_max=0.0)
 	mel_spec = ((mel_spec + min_db) / min_db * 255).astype(np.uint8)
