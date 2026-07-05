@@ -1,5 +1,7 @@
 from collections import deque
 import os
+import shutil
+from time import time
 
 from ultralytics import YOLO
 import sounddevice as sd
@@ -31,6 +33,8 @@ def create_spectrogram(audio_array, sample_rate):
 
 
 def main():
+	os.makedirs('micro', exist_ok=True)
+
 	list_size = 5
 	median_list = deque(maxlen=list_size)
    
@@ -46,8 +50,9 @@ def main():
 		i = int(input(' --> '))
 		print('Выбрана модель:', paths[i])
 	except:  # noqa: E722
-		print('Неверный ввод, выбрана последняя')
+		print('Неверный ввод, выбрана последняя модель: ', end='')
 		i = index - 1
+		print(paths[i])
 
 	model = YOLO(paths[i])
 
@@ -68,6 +73,9 @@ def main():
 			results = model(img_array, save=False, verbose=False, rect=True)[0]
 			
 			q = float(results.probs.data[0])
+
+			if q > 0.1:
+				shutil.copy('micro.png', f'micro/micro_{int(time()*1000)}.png')
 			
 			median_list.append(q)
 			aq = sum(median_list) / list_size
