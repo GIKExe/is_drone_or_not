@@ -14,11 +14,18 @@ def create_spectrogram(audio_array, sample_rate):
 	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
 	plt.imsave('micro0.png', np.flipud(mel_spec), cmap='gray')
 
-	min_db = 80
-	mel_spec = np.clip(mel_spec, a_min=-min_db, a_max=0.0)
-	mel_spec = ((mel_spec + min_db) / min_db * 255).astype(np.uint8)
-
+	# === АДАПТИВНАЯ НОРМАЛИЗАЦИЯ (как в plt.imsave) ===
+	vmin = mel_spec.min()
+	vmax = mel_spec.max()
+	
+	# Избегаем деления на ноль
+	if vmax - vmin < 1e-6:
+		vmax = vmin + 1
+	
+	# Нормализуем к 0-255
+	mel_spec = ((mel_spec - vmin) / (vmax - vmin) * 255).astype(np.uint8)
 	mel_spec = np.flipud(mel_spec)
+
 	plt.imsave('micro.png', mel_spec, cmap='gray')
 	return np.stack((mel_spec,) * 3, axis=-1)
 
