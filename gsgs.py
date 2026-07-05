@@ -48,9 +48,9 @@ def split_files_80_20(source_dir: str, dir_80: str, dir_20: str, ratio: float = 
 
 if __name__ == "__main__":
 	# 🔧 НАСТРОЙКИ
-	SOURCE_FOLDER = "audio"      # Папка с исходными файлами
-	FOLDER_80     = "audio80"     # Куда сохранить 80%
-	FOLDER_20     = "audio20"     # Куда сохранить 20%
+	SOURCE_FOLDER = "micro"      # Папка с исходными файлами
+	FOLDER_80     = "micro80"     # Куда сохранить 80%
+	FOLDER_20     = "micro20"     # Куда сохранить 20%
 	RANDOM_SEED   = 42            # Для воспроизводимости. None = полностью случайно
 
 	split_files_80_20(SOURCE_FOLDER, FOLDER_80, FOLDER_20, ratio=0.8, seed=RANDOM_SEED)
