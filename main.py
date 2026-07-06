@@ -31,15 +31,17 @@ def save_melspectrogram(audio_array, sample_rate, save_path):
     # Размеры
     n_mels, total_frames = mel_spec.shape  # n_mels = 128
     chunk_width = 16
+    step = 4
 
-    # Количество полных кусков (остаток отбрасываем)
-    n_chunks = total_frames // chunk_width
-
-    for i in range(n_chunks):
-        start = i * chunk_width
+    i = 0
+    start = i * step
+    end = start + chunk_width
+    while end < total_frames:
+        start = i * step
         end = start + chunk_width
         chunk = mel_spec[428:460, start:end] 
-        plt.imsave(save_path+f'_chunk_{i:03d}.png', chunk, cmap='gray')
+        plt.imsave(save_path+f'_chunk_{i:04d}.png', chunk, cmap='gray')
+        i += 1
 
 
 # 4. Обработка данных
