@@ -1,9 +1,9 @@
-# from collections import deque
+from collections import deque
 import os
-# import shutil
-# from time import time
+import shutil          # noqa: F401
+from time import time  # noqa: F401
 
-# from ultralytics import YOLO
+from ultralytics import YOLO
 import sounddevice as sd
 import numpy as np
 import librosa
@@ -17,8 +17,8 @@ def create_spectrogram(audio_array):
 	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=SAMPLE_RATE, n_mels=512)
 	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
 	mel_spec = np.flipud(mel_spec)
-	
-	# plt.imsave('micro0.png', mel_spec, cmap='gray')
+
+	plt.imsave('micro0.png', mel_spec, cmap='gray')
 
 	# === АДАПТИВНАЯ НОРМАЛИЗАЦИЯ (как в plt.imsave) ===
 	vmin = mel_spec.min()
@@ -30,6 +30,7 @@ def create_spectrogram(audio_array):
 	
 	# Нормализуем к 0-255
 	mel_spec = ((mel_spec - vmin) / (vmax - vmin) * 255).astype(np.uint8)
+	mel_spec = mel_spec[428:460, :] 
 
 	plt.imsave('micro.png', mel_spec, cmap='gray')
 	return np.stack((mel_spec,) * 3, axis=-1)
@@ -38,26 +39,26 @@ def create_spectrogram(audio_array):
 def main():
 	os.makedirs('micro', exist_ok=True)
 
-	# list_size = 5
-	# median_list = deque(maxlen=list_size)
+	list_size = 5
+	median_list = deque(maxlen=list_size)
    
-	# index = 1
-	# paths = {}
-	# print('Выберите модель: ')
-	# for filename in os.listdir():
-	# 	if filename.startswith('v') and filename.endswith('.pt'):
-	# 		print(f'{index}) {filename}')
-	# 		paths[index] = filename
-	# 		index += 1
-	# try:
-	# 	i = int(input(' --> '))
-	# 	print('Выбрана модель:', paths[i])
-	# except:  # noqa: E722
-	# 	print('Неверный ввод, выбрана последняя модель: ', end='')
-	# 	i = index - 1
-	# 	print(paths[i])
+	index = 1
+	paths = {}
+	print('Выберите модель: ')
+	for filename in os.listdir():
+		if filename.startswith('v') and filename.endswith('.pt'):
+			print(f'{index}) {filename}')
+			paths[index] = filename
+			index += 1
+	try:
+		i = int(input(' --> '))
+		print('Выбрана модель:', paths[i])
+	except:  # noqa: E722
+		print('Неверный ввод, выбрана последняя модель: ', end='')
+		i = index - 1
+		print(paths[i])
 
-	# model = YOLO(paths[i])
+	model = YOLO(paths[i])
 
 	duration = 0.5
 	frames_to_read = int(duration * SAMPLE_RATE)
@@ -71,19 +72,19 @@ def main():
 			img_array = create_spectrogram(audio)  # noqa: F841
 			
 			# Передаем numpy-массив напрямую в модель
-			# model.predict
-			# results = model(img_array, save=False, verbose=False, rect=True)[0]
+			model.predict
+			results = model(img_array, save=False, verbose=False, rect=True)[0]
 			
-			# q = float(results.probs.data[0])
+			q = float(results.probs.data[0])
 
-			# if q > 0.1:
-			# 	shutil.copy('micro.png', f'micro/micro_{int(time()*1000)}.png')
+			if q > 0.1:
+				shutil.copy('micro.png', f'micro/micro_{int(time()*1000)}.png')
 			
-			# median_list.append(q)
-			# aq = sum(median_list) / list_size
-			# mq = min(median_list)
-			# text = 'ДРОН' if (aq > 0.6) and (mq > 0.2) else '    '
-			# print(f'{text}  Вероятность: {f"{q*100:.2f}":>6}%  Среднее: {f"{aq*100:.2f}":>6}%')
+			median_list.append(q)
+			aq = sum(median_list) / list_size
+			mq = min(median_list)
+			text = 'ДРОН' if (aq > 0.6) and (mq > 0.2) else '    '
+			print(f'{text}  Вероятность: {f"{q*100:.2f}":>6}%  Среднее: {f"{aq*100:.2f}":>6}%')
 
 
 if __name__ == '__main__':
