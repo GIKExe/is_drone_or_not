@@ -27,6 +27,7 @@ def save_melspectrogram(audio_array, sample_rate, save_path):
 	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=512)
 	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
 	mel_spec = np.flipud(mel_spec)
+	mel_spec = mel_spec[428:460, :] 
 
 	# Размеры
 	n_mels, total_frames = mel_spec.shape  # n_mels = 128
@@ -39,7 +40,7 @@ def save_melspectrogram(audio_array, sample_rate, save_path):
 	while end < total_frames:
 		start = i * step
 		end = start + chunk_width
-		chunk = mel_spec[428:460, start:end] 
+		chunk = mel_spec[:, start:end] 
 		plt.imsave(save_path+f'_chunk_{i:04d}.png', chunk, cmap='gray')
 		i += 1
 
