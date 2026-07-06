@@ -77,7 +77,7 @@ def main():
 			
 			q = float(results.probs.data[0])
 
-			if q > 0.1:
+			if q > 0.5:
 				shutil.copy('micro.png', f'micro/micro_{int(time()*1000)}.png')
 			
 			median_list.append(q)
