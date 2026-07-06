@@ -8,8 +8,8 @@ from datasets import load_dataset, Audio  # Импортируем класс Au
 
 # Словарь для преобразования числовых меток в названия папок
 LABEL_MAP = {
-    0: "no_drone",
-    1: "drone"
+	0: "no_drone",
+	1: "drone"
 }
 
 # 1. Загрузка датасета
@@ -24,61 +24,61 @@ base_dataset_dir = "out"
 
 # 3. Функция генерации спектрограммы
 def save_melspectrogram(audio_array, sample_rate, save_path):
-    mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=512)
-    mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
-    mel_spec = np.flipud(mel_spec)
+	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sample_rate, n_mels=512)
+	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
+	mel_spec = np.flipud(mel_spec)
 
-    # Размеры
-    n_mels, total_frames = mel_spec.shape  # n_mels = 128
-    chunk_width = 16
-    step = 4
+	# Размеры
+	n_mels, total_frames = mel_spec.shape  # n_mels = 128
+	chunk_width = 16
+	step = 4
 
-    i = 0
-    start = i * step
-    end = start + chunk_width
-    while end < total_frames:
-        start = i * step
-        end = start + chunk_width
-        chunk = mel_spec[428:460, start:end] 
-        plt.imsave(save_path+f'_chunk_{i:04d}.png', chunk, cmap='gray')
-        i += 1
+	i = 0
+	start = i * step
+	end = start + chunk_width
+	while end < total_frames:
+		start = i * step
+		end = start + chunk_width
+		chunk = mel_spec[428:460, start:end] 
+		plt.imsave(save_path+f'_chunk_{i:04d}.png', chunk, cmap='gray')
+		i += 1
 
 
 # 4. Обработка данных
 for index, item in enumerate(dataset['train']):
-    try:
-        # Извлекаем сырые байты аудиофайла
-        audio_bytes = item['audio']['bytes'] # type: ignore
+	try:
+		# Извлекаем сырые байты аудиофайла
+		audio_bytes = item['audio']['bytes'] # type: ignore
 
-        # Декодируем аудио в массив numpy
-        with io.BytesIO(audio_bytes) as byte_io:
-            audio_data, sample_rate = sf.read(byte_io)
+		# Декодируем аудио в массив numpy
+		with io.BytesIO(audio_bytes) as byte_io:
+			audio_data, sample_rate = sf.read(byte_io)
 
-        if len(audio_data.shape) > 1:
-            audio_data = np.mean(audio_data, axis=1)
+		if len(audio_data.shape) > 1:
+			audio_data = np.mean(audio_data, axis=1)
 
-        label_id = item['label'] # type: ignore
-        class_name = LABEL_MAP.get(label_id, str(label_id))
+		label_id = item['label'] # type: ignore
+		class_name = LABEL_MAP.get(label_id, str(label_id))
 
-        # Разделение выборки: 20% в val, 80% в train
-        split_type = "val" if index % 5 == 0 else "train"
+		# Разделение выборки: 20% в val, 80% в train
+		split_type = "val" if index % 5 == 0 else "train"
 
-        # Формируем путь
-        class_dir = os.path.join(base_dataset_dir, split_type, class_name)
-        if not os.path.exists(class_dir):
-            os.makedirs(class_dir)
+		# Формируем путь
+		class_dir = os.path.join(base_dataset_dir, split_type, class_name)
+		if not os.path.exists(class_dir):
+			os.makedirs(class_dir)
 
-        file_name = f"sample_{index:06d}"
-        save_path = os.path.join(class_dir, file_name)
+		file_name = f"sample_{index:06d}"
+		save_path = os.path.join(class_dir, file_name)
 
-        save_melspectrogram(audio_data, sample_rate, save_path)
+		save_melspectrogram(audio_data, sample_rate, save_path)
 
-    except Exception as e:
-        print(f"Ошибка на индексе {index}: {e}. Пропускаем файл.")
-        continue
+	except Exception as e:
+		print(f"Ошибка на индексе {index}: {e}. Пропускаем файл.")
+		continue
 
-    # Вывод прогресса
-    if index % 100 == 0:
-        print(f"Обработано {index} файлов...")
+	# Вывод прогресса
+	if index % 100 == 0:
+		print(f"Обработано {index} файлов...")
 
 print("Распаковка, конвертация и разделение датасета завершены успешно!")
