@@ -29,7 +29,7 @@ def to_spectrogram(path):
 	# 	end = start + chunk_width
 	# 	chunk = mel_spec[:, start:end]  # shape: (128, 16)
 	# 	plt.imsave(f'audio/audio_{audio_name}_chunk_{i:03d}.png', chunk, cmap='gray')
-	plt.imsave(f'audio/audio_{audio_name}.png', mel_spec, cmap='gray')
+	plt.imsave(f'audio/audio_{audio_name}.png', mel_spec[428:460, :], cmap='gray')
 
 
 def main():

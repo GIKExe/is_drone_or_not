@@ -11,7 +11,7 @@ def main():
 	# 1. Инициализируем самую легкую модель YOLOv8 для классификации
 	# Буква 'n' означает Nano (весит ~5 МБ, идеальна для портативок)
 	# model = YOLO('yolov8n-cls.pt')
-	model = YOLO('v4-2.pt')
+	model = YOLO('yolov8n-cls.pt')
 
 	# 2. Запускаем обучение
 	model.train(
