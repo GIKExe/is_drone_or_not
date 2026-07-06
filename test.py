@@ -16,7 +16,9 @@ SAMPLE_RATE = 16_000
 def create_spectrogram(audio_array):
 	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=SAMPLE_RATE, n_mels=512)
 	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
-	plt.imsave('micro0.png', np.flipud(mel_spec), cmap='gray')
+	mel_spec = np.flipud(mel_spec)
+	
+	# plt.imsave('micro0.png', mel_spec, cmap='gray')
 
 	# === АДАПТИВНАЯ НОРМАЛИЗАЦИЯ (как в plt.imsave) ===
 	vmin = mel_spec.min()
@@ -28,7 +30,6 @@ def create_spectrogram(audio_array):
 	
 	# Нормализуем к 0-255
 	mel_spec = ((mel_spec - vmin) / (vmax - vmin) * 255).astype(np.uint8)
-	mel_spec = np.flipud(mel_spec)
 
 	plt.imsave('micro.png', mel_spec, cmap='gray')
 	return np.stack((mel_spec,) * 3, axis=-1)
