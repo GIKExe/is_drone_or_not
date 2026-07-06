@@ -6,27 +6,30 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+SAMPLE_RATE = 16_000
+
+
 def to_spectrogram(path):
-	sr = 16000
-	audio_array, sr = librosa.load(path, sr=sr)
+	audio_array, sr = librosa.load(path, sr=SAMPLE_RATE)
 
-	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=sr, n_mels=128)
+	mel_spec = librosa.feature.melspectrogram(y=audio_array, sr=SAMPLE_RATE, n_mels=512)
 	mel_spec = librosa.power_to_db(mel_spec, ref=1.0)
-	
-	# Размеры
-	n_mels, total_frames = mel_spec.shape  # n_mels = 128
-	chunk_width = 16
+	mel_spec = np.flipud(mel_spec)
 
-	# Количество полных кусков (остаток отбрасываем)
-	n_chunks = total_frames // chunk_width
+	# # Размеры
+	# n_mels, total_frames = mel_spec.shape  # n_mels = 128
+	# chunk_width = 16
+
+	# # Количество полных кусков (остаток отбрасываем)
+	# n_chunks = total_frames // chunk_width
 
 	audio_name = int(time()*1000)
-	for i in range(n_chunks):
-		start = i * chunk_width
-		end = start + chunk_width
-		chunk = mel_spec[:, start:end]  # shape: (128, 16)
-		chunk = np.flipud(chunk)
-		plt.imsave(f'audio/audio_{audio_name}_chunk_{i:03d}.png', chunk, cmap='gray')
+	# for i in range(n_chunks):
+	# 	start = i * chunk_width
+	# 	end = start + chunk_width
+	# 	chunk = mel_spec[:, start:end]  # shape: (128, 16)
+	# 	plt.imsave(f'audio/audio_{audio_name}_chunk_{i:03d}.png', chunk, cmap='gray')
+	plt.imsave(f'audio/audio_{audio_name}.png', mel_spec, cmap='gray')
 
 
 def main():
@@ -46,5 +49,3 @@ if __name__ == "__main__":
 		main()
 	except KeyboardInterrupt:
 		pass
-	except:
-		raise
