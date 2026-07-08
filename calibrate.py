@@ -26,7 +26,7 @@ MAX_FILES_PER_SOURCE = 300  # лимит на КАЖДЫЙ источник от
 def scan_source(name, generator, limit):
     values = []
     count = 0
-    for audio_data, sample_rate, label_id, unique_name in generator:
+    for audio_data, sample_rate, label_id, unique_name, split_type in generator:
         if count >= limit:
             break
         try:
