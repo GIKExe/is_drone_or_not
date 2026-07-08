@@ -52,7 +52,13 @@ VMIN_DB = -80.0
 VMAX_DB = 0.0
 
 # Финальный размер изображения на входе в сеть (квадрат, под YOLO-cls).
-IMG_SIZE = 256
+# ВАЖНО: было 256 при FREQ-высоте 256 и CHUNK_WIDTH=16 — это означало
+# 16-кратное растяжение по ширине (16 честных временных фреймов
+# растягивались в 256 пикселей путём интерполяции, то есть почти вся
+# "детализация" по времени была фейковой). 64 — компромисс: высота
+# сжимается в 4 раза (256->64), ширина растягивается в 4 раза (16->64) —
+# искажение симметричное и заметно мягче, чем было.
+IMG_SIZE = 64
 
 
 def compute_mel_db(audio_array: np.ndarray, sr: int = SAMPLE_RATE) -> np.ndarray:
@@ -82,9 +88,9 @@ def chunk_to_image(chunk_db: np.ndarray, img_size: int = IMG_SIZE) -> np.ndarray
     normalized = (clipped - VMIN_DB) / (VMAX_DB - VMIN_DB)  # 0..1
     gray = (normalized * 255).astype(np.uint8)
 
-    # Приводим прямоугольный чанк (32 x 16) к квадрату img_size x img_size
-    # ОДНИМ и тем же способом что при генерации датасета, что при инференсе,
-    # чтобы train.py (imgsz=32) и реальный вход модели точно совпадали.
+    # Приводим прямоугольный чанк к квадрату img_size x img_size ОДНИМ и тем
+    # же способом что при генерации датасета, что при инференсе, чтобы
+    # train.py (imgsz=IMG_SIZE) и реальный вход модели точно совпадали.
     img = Image.fromarray(gray, mode="L").resize((img_size, img_size), Image.BILINEAR)
     rgb = np.stack([np.array(img)] * 3, axis=-1)
     return rgb
@@ -132,4 +138,3 @@ def single_chunk_to_image(audio_array: np.ndarray, sr: int = SAMPLE_RATE) -> np.
         chunk = np.pad(band, ((0, 0), (0, pad_width)), mode="edge")
 
     return chunk_to_image(chunk)
-

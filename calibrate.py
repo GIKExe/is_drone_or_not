@@ -18,7 +18,7 @@ wav_data/no_drone — вместо того чтобы гадать значен
 import numpy as np
 
 from spectrogram import compute_mel_db, extract_band, iter_chunks
-from data_sources import iter_parquet_audio, iter_wav_audio
+from data_sources import iter_wav_audio
 
 MAX_FILES_PER_SOURCE = 300  # лимит на КАЖДЫЙ источник отдельно
 
@@ -47,10 +47,10 @@ def scan_source(name, generator, limit):
 
 
 def main():
-    parquet_values = scan_source("parquet", iter_parquet_audio(), MAX_FILES_PER_SOURCE)
+
     wav_values = scan_source("wav", iter_wav_audio(), MAX_FILES_PER_SOURCE)
 
-    all_chunks = parquet_values + wav_values
+    all_chunks = wav_values
     if not all_chunks:
         print("Не найдено ни одного файла ни в одном источнике — проверьте пути.")
         return
