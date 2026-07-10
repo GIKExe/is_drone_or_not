@@ -30,10 +30,14 @@ def create_spectrogram(audio_array):
 
 
 class DroneDetectorGUI:
-    def __init__(self, root):
+    def __init__(self, root, device: int | None = None):
+        '''
+            device - устройство с которого считывается звук.
+        '''
         self.root = root
         self.root.title("Детектор дронов")
         self.root.configure(bg='#1e1e1e')
+        self.device = device
 
         # Настройка адаптивности
         self.root.grid_columnconfigure(0, weight=1)
@@ -216,7 +220,7 @@ class DroneDetectorGUI:
         median_list = deque(maxlen=list_size)
 
         try:
-            with sd.InputStream(device=2,samplerate=SAMPLE_RATE, channels=1, dtype='float32') as stream:
+            with sd.InputStream(device=self.device, samplerate=SAMPLE_RATE, channels=1, dtype='float32') as stream:
                 while self.running:
                     audio, overflowed = stream.read(frames_to_read)
                     audio = audio.flatten()
