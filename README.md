@@ -1,8 +1,8 @@
 # is_drone_or_not
 Используемые датасеты: <br>
 https://huggingface.co/datasets/geronimobasso/drone-audio-detection-samples <br>
-https://www.kaggle.com/datasets/amineipad/drone-sound-audio-detection/data?select=Binary_Drone_Audio
-
+https://www.kaggle.com/datasets/amineipad/drone-sound-audio-detection/data?select=Binary_Drone_Audio <br>
+https://drive.google.com/file/d/1uJn_Fa4fCDpjmu8_EyEpO46-HIGa9bag/view <br>
 Микроинструкция:
 1. Прописываем в data_sources папки с датасетом формата dataset/(train and val)/(drone and no_drone) 
 2. Запускаем calibrate
