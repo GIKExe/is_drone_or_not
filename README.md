@@ -18,4 +18,5 @@ https://drive.google.com/file/d/1uJn_Fa4fCDpjmu8_EyEpO46-HIGa9bag/view <br>
 Для корректной работы модели необходимо изменить значения переменных VMIN_DB и VMAX_DB (51-52 стр.) в файле spectrogram.py на: <br>
 VMIN_DB = -84.05 <br>
 VMAX_DB = 14.66 <br>
-
+<br>
+Запустить можно через gui.py или test.py <br>
