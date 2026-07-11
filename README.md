@@ -3,6 +3,8 @@
 https://huggingface.co/datasets/geronimobasso/drone-audio-detection-samples <br>
 https://www.kaggle.com/datasets/amineipad/drone-sound-audio-detection/data?select=Binary_Drone_Audio <br>
 https://www.kaggle.com/datasets/janboubiabderrahim/vehicle-sounds-dataset?resource=download-directory <br>
+
+### Датасет на котором обучена модель: <br>
 https://drive.google.com/file/d/1uJn_Fa4fCDpjmu8_EyEpO46-HIGa9bag/view <br>
 
 # Обучение
